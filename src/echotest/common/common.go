@@ -4,5 +4,5 @@ import "fmt";
 
 
 func Test() {
-    fmt.Println("test.")
+    fmt.Println("Common test")
 }
