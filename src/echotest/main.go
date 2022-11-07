@@ -10,7 +10,7 @@ func main() {
     common.Test()
     // fmt.Sprintf("asdasdas %T", config.Configuration)
     config := config.GetConfig()
-    a := "DB"
+    // a := "DB"
     fmt.Printf("%+v\n", config.DB)
     // fmt.Printf("%+v\n", config.db)
     
