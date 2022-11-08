@@ -1,0 +1,11 @@
+{{template "layout" .}}
+
+
+{{define "title"}}error{{end}}
+
+{{define "content"}}
+<h2>{{ .Code }} Auth required</div>
+<div>{{ .Message }}</div>
+<hr />
+{{ . }}
+{{end}}
