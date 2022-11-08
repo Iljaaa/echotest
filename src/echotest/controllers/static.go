@@ -15,7 +15,7 @@ func HelloWorld() (int, string, error) {
 // template render
 func Template(c echo.Context) (int, error) {
 	c.Render(http.StatusOK, "home.html", map[string]interface{}{
-		"name": "HOME",
+		"name": "HOME2",
 		"msg": "Hello, Boatswain!",
 	})
     return http.StatusOK, nil

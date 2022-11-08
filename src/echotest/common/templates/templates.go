@@ -23,7 +23,7 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 // 
 func GetTemplates() (map[string]*template.Template) {
 	templates := make(map[string]*template.Template)
-    templates["home.html"] = template.Must(template.ParseFiles("view/home.html"))
+    templates["home.html"] = template.Must(template.ParseFiles("view/static/home.html", "view/layouts/layout.html"))
     // templates["about.html"] = template.Must(template.ParseFiles("view/about.html", "view/base.html"))
 	
     return templates;
