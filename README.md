@@ -14,7 +14,17 @@ go get github.com/jackc/pgx/v5
 migrations 
 https://github.com/pressly/goose
 
-https://github.com/golang-migrate/migrate
+go install github.com/pressly/goose/v3/cmd/goose@latest
+
+не понял, возможно зависит от этой библиотеки
+go install github.com/golang-migrate/migrate/v4
+
+
+go build -tags='no_mysql no_sqlite3' -o goose 
+
+status
+./goose postgres "host=db user=postgres password=example dbname=sportscools sslmode=disable" status
+
 
 validation
 https://github.com/go-playground/validator
