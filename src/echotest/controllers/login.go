@@ -29,10 +29,11 @@ type Errors struct {
 
 type LoginPageData struct {
 	Login string
-	Errors struct {
+	Errors map[string]string
+	/*Errors struct {
 		Login string
 		Password string
-	}
+	}*/
 }
 
 
@@ -44,13 +45,22 @@ func (cv *CustomValidator) Validate(i interface{}) error {
     return nil
 }
 
+
+var errorDescription map[string]string
+
+func init() {
+	errorDescription = map[string]string {
+		"Login.required": "Login requried",
+		"Password.required": "Passoword requried",
+	}
+}
+
 //
 // login page
 // 
 func Login(c echo.Context) (int, error) {
-	login := c.FormValue("login")
-	password := c.FormValue("password")
-	fmt.Printf("login: %s   pass: %s\n", login, password);
+	// login := c.FormValue("login")
+	// password := c.FormValue("password")
 
 	var user User
 	err := c.Bind(&user)
@@ -58,12 +68,9 @@ func Login(c echo.Context) (int, error) {
 		return http.StatusBadRequest, err
 	}
 
-
 	data := LoginPageData{
-		Login: login,
-		Errors: Errors{},
+		Login: user.Login,
 	}
-
 	
 	isValid, errors := validateData(c, user)
 	if !isValid {
@@ -72,45 +79,39 @@ func Login(c echo.Context) (int, error) {
 
 	// here login
 	
-	
 	c.Render(http.StatusOK, "login.html", data)
     return http.StatusOK, nil
 }
 
 
-func validateData (c echo.Context, user User) (bool, Errors) {
-	ret := Errors {}
+func validateData (c echo.Context, user User) (bool, map[string]string) {
+	errorssss := make(map[string]string)
+	err := c.Validate(user);
 
-	if err := c.Validate(user); err != nil {
+	if err != nil {
 		// return http.StatusBadRequest, err
 
 		for _, err1 := range err.(validator.ValidationErrors) {
 
-			if (err1.Field() == "Login"){
-				switch err1.Tag() {
-				case "required":
-					ret.Login = "Logon requried"
-				default:
-					// c.Error(err1)
-					ret.Login = "Error field"
-				}
-			}
+			field := err1.Field()
 
-			if (err1.Field() == "Password"){
-				switch err1.Tag() {
-				case "required":
-					ret.Password = "Password requried"
-				default:
-					//c.Error(err1)
-					ret.Password = "Error field"
-				}
+			errorDescriptionCode := fmt.Sprint(field, ".", err1.Tag())
+
+			description, exists := errorDescription[errorDescriptionCode]
+
+			if !exists {
+				description = fmt.Sprint("Error '", err1.Tag(), "' on field '", field, "'")
 			}
 
 
+			_, errorExist := errorssss[field]
+			if !errorExist { errorssss[field] = description }
 		}
 
-		return false, ret
+		return false, errorssss
 	}
 
-	return true, ret
+	// validate
+
+	return true, errorssss
 }
