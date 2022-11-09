@@ -25,6 +25,10 @@ go build -tags='no_mysql no_sqlite3' -o goose
 status
 ./goose postgres "host=db user=postgres password=example dbname=sportscools sslmode=disable" status
 
+cretae migration
+./goose -dir ./../migrations create init sql
+
+./goose -dir ./../migrations postgres "host=db user=postgres password=example dbname=sportscools sslmode=disable" up
 
 validation
 https://github.com/go-playground/validator

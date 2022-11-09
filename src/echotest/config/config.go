@@ -5,9 +5,10 @@ import "fmt"
 // Db config
 type dbConfig struct {
 	HOST		string
-	PORT		string
+	PORT		int
 	USER		string
 	PASSWORD	string
+	DB			string
 }
 
 type Configuration struct {
@@ -19,10 +20,11 @@ var conf Configuration;
 func init() {
 	conf = Configuration{}
 	conf.DB = dbConfig{
-		HOST: "asdasdas",
-		PORT: "123",
-		USER: "user",
-		PASSWORD: "password",
+		HOST: "db",
+		PORT: 5432,
+		USER: "postgres",
+		PASSWORD: "example",
+		DB: "sportscools",
 	}
 	// conf = Configuration{
 	// 	db: dbConfig{

@@ -13,11 +13,12 @@ import "github.com/labstack/echo/v4"
 import "github.com/go-playground/validator"
 
 // postgres
-import "github.com/jackc/pgx/v5"
-import "context"
-import "os"
+// import "github.com/jackc/pgx/v5"
+// import "context"
+// import "os"
 
 import "github.com/Iljaaa/echotest/src/common";
+import "github.com/Iljaaa/echotest/src/common/db"; 
 import "github.com/Iljaaa/echotest/src/config";
 import "github.com/Iljaaa/echotest/src/controllers";
 
@@ -29,29 +30,11 @@ func main() {
     fmt.Printf("%+v\n", config.DB)
 
     // connect to db
-    connectToDb()
+    db.InitConnection()
     
     // starting server
     startEcho()
 }
-
-func connectToDb() {
-
-    config := config.GetConfig()
-    fmt.Printf("%+v\n", config.DB)
-
-    dbConnectString := fmt.Sprintf ("postgres://postgres:example@db:5432/sportscools")
-    fmt.Printf("connect to db: %s", dbConnectString)
-
-    conn, err := pgx.Connect(context.Background(), "postgres://postgres:example@db:5432/sportscools")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
-	defer conn.Close(context.Background())
-}
-
-
 
 func startEcho () {
 
