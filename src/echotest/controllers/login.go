@@ -5,13 +5,17 @@ import "net/http"
 // import "errors"
 
 import "github.com/labstack/echo/v4"
-
 import "github.com/go-playground/validator"
 // import "github.com/labstack/echo/v4/middleware"
 
+import "github.com/Iljaaa/echotest/src/models/users"
+
+// auth
+import "github.com/Iljaaa/echotest/src/common"
+
 
 type (
-	User struct {
+	UserData struct {
 		Login  string `form:"login" validate:"required"`
 		Password string `form:"password" validate:"required"`
 	}
@@ -22,10 +26,10 @@ type (
 )
 
 
-type Errors struct {
+/*type Errors struct {
 	Login string
 	Password string
-}
+}*/
 
 type LoginPageData struct {
 	Login string
@@ -57,41 +61,53 @@ func init() {
 
 //
 // login page
+// int, error
+func Login(c echo.Context) error {	
+	c.Render(http.StatusOK, "login.html", LoginPageData{})
+	return c.NoContent(http.StatusOK)
+}
+
+
+//
+// login page with post data
 // 
-func Login(c echo.Context) (int, error) {
+func LoginPost(c echo.Context) (int, error) {
 	// login := c.FormValue("login")
 	// password := c.FormValue("password")
 
-	var user User
-	err := c.Bind(&user)
+	var u UserData
+	err := c.Bind(&u)
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
 
 	data := LoginPageData{
-		Login: user.Login,
+		Login: u.Login,
 	}
 	
-	isValid, errors := validateData(c, user)
+	isValid, dbUser, errors := validateData(c, u)
 	if !isValid {
 		data.Errors = errors
 	}
 
-	// here login
+	
+	// save auth
+	common.WriteAuthCookie(c, dbUser.Id)
 	
 	c.Render(http.StatusOK, "login.html", data)
     return http.StatusOK, nil
 }
 
+func validateData (c echo.Context, user UserData) (bool, *models.User, map[string]string) {
 
-func validateData (c echo.Context, user User) (bool, map[string]string) {
-	errorssss := make(map[string]string)
-	err := c.Validate(user);
+	errors := make(map[string]string)
 
-	if err != nil {
+	validate := c.Validate(user);
+
+	if validate != nil {
 		// return http.StatusBadRequest, err
 
-		for _, err1 := range err.(validator.ValidationErrors) {
+		for _, err1 := range validate.(validator.ValidationErrors) {
 
 			field := err1.Field()
 
@@ -103,15 +119,40 @@ func validateData (c echo.Context, user User) (bool, map[string]string) {
 				description = fmt.Sprint("Error '", err1.Tag(), "' on field '", field, "'")
 			}
 
-
-			_, errorExist := errorssss[field]
-			if !errorExist { errorssss[field] = description }
+			_, errorExist := errors[field]
+			if !errorExist { errors[field] = description }
 		}
 
-		return false, errorssss
+		return false, nil, errors
 	}
 
-	// validate
+	// user find
+	dbUser, err := models.FindByLogin(user.Login)
+	if err != nil || dbUser == nil {
+		errors["Login"] = "User not found"
+		return false, nil, errors
+	}
 
-	return true, errorssss
+	// password hash
+	hash, err := common.HashPassword(user.Password)
+	if err != nil {
+		errors["Password"] = "Password hash not created"
+		return false, nil, errors
+	}
+
+	// err2 := bcrypt.CompareHashAndPassword([]byte(hash), []byte("123456"))
+	
+	// exal password
+	comparePasswordError := common.ComparePassword(hash, "123456")
+	if comparePasswordError != nil {
+		errors["Password"] = "Password not correct"
+		return false, nil, errors
+	}
+
+
+	// if  {
+	// 	errors["Password"] = "Wrong password"
+	// }
+
+	return true, dbUser, errors
 }

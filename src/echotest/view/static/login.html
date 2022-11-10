@@ -5,6 +5,7 @@
 {{define "content"}}
 <form method="post">
     <input type="text" name="login" value="{{ .Login }}" /><br />
+    <div>{{ .Errors.Login }}</div>
     <input type="password" name="password" />
     <div>{{ .Errors.Password }}</div>
     <br />

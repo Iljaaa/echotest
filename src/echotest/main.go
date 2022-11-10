@@ -59,36 +59,34 @@ func startEcho () {
 
 
 	e.GET("/", func(c echo.Context) error {
-        status, error := controllers.Template(c)
-        if error != nil {
-            e.Logger.Fatal(error)
-        }
-		return c.NoContent(status)
+        return controllers.Template(c)
 	})
 
 	e.GET("/profile", func(c echo.Context) error {
-        status, body, error := controllers.Error()
-        if error != nil { e.Logger.Fatal(error) }
-		return c.String(status, body)
+        return controllers.Template(c)
 	}, common.AuthMiddleware)
 
 
 	e.GET("/login", func(c echo.Context) error {
-        status, error := controllers.Login(c)
-        if error != nil {e.Logger.Fatal(error)}
-		return c.NoContent(status)
+        return controllers.Login(c)
 	})
 
 	e.POST("/login", func(c echo.Context) error {
-        status, error := controllers.Login(c)
+        status, error := controllers.LoginPost(c)
         if error != nil {e.Logger.Fatal(error)}
 		return c.NoContent(status)
 	})
 
+    // test then controller return error
 	e.GET("/error", func(c echo.Context) error {
-        status, body, error := controllers.Error()
-        if error != nil { e.Logger.Fatal(error) }
-		return c.String(status, body)
+        return controllers.Error()
+	})
+
+    // thest then controller return code and error
+	e.GET("/error404", func(c echo.Context) error {
+        status, err := controllers.Error404(c)
+        // if err != nil {e.Logger.Fatal(err)}
+        return echo.NewHTTPError(status, err)
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))

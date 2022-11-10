@@ -1,4 +1,4 @@
-package users
+package models
 
 import "fmt"
 import "context"
@@ -8,9 +8,13 @@ import "github.com/Iljaaa/echotest/src/common/db";
 
 
 type User struct {
-	Id    int    `json:"id"`
-	Name  string `json:"name"`
-	Phone string `json:"phone"`
+	Id        int    
+	Name      string 
+	// Phone string 
+  Login	    string	
+  Password	string	
+  CreatedAt string	// string ?
+  UpdatedAt	string  // string ?
 }
 
 
@@ -43,6 +47,24 @@ func FindById (id int) (*User, error) {
   u := User{}
 
 	err := db.GetPool().QueryRow(context.Background(), query).Scan(&u.Id, &u.Name)
+  if err != nil {
+    return nil, err
+  }
+
+  return &u, nil;
+}
+
+//
+// find user by login
+//
+func FindByLogin (login string) (*User, error) {
+
+  query := fmt.Sprintf("select id, name, login, password FROM users where login = '%s' limit 1", login)  
+  // fmt.Printf("query %s\n", query)
+
+  u := User{}
+
+	err := db.GetPool().QueryRow(context.Background(), query).Scan(&u.Id, &u.Name, &u.Login, &u.Password)
   if err != nil {
     return nil, err
   }

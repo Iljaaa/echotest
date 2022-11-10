@@ -30,6 +30,9 @@ func GetTemplates() (map[string]*template.Template) {
 
 	// errors
     templates["error401.html"] = template.Must(template.ParseFiles("view/errors/error401.html", "view/layouts/layout.html"))
+    templates["error.html"] = template.Must(template.ParseFiles("view/errors/error.html", "view/layouts/layout.html"))
+    // templates["about.html"] = template.Must(template.ParseFiles("view/about.html", "view/base.html"))
+	
     // templates["about.html"] = template.Must(template.ParseFiles("view/about.html", "view/base.html"))
 	
     return templates;

@@ -1,5 +1,6 @@
 package common
 
+import "fmt"
 import "net/http"
 
 // echo
@@ -14,6 +15,9 @@ type ErrorData struct {
 // Error handler
 //
 func CustomHTTPErrorHandler(err error, c echo.Context) {
+
+    fmt.Printf("errr2222: %v\n", err)
+
     data := ErrorData{
         Code: http.StatusInternalServerError,
     }
@@ -28,6 +32,9 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
         
     }
 
+    // LOG ERROR
+    c.Logger().Error(err)
+
     // fmt.Printf("data: %v\n", msg)
     // data.Message = msg
 
@@ -37,5 +44,5 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
         return
     }
 
-    c.Render(data.Code, "error.htl", data)
+    c.Render(data.Code, "error.html", data)
 }
