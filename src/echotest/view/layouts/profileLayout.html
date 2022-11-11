@@ -5,9 +5,13 @@
         <title>{{block "title" .}}{{end}}</title>
     </head>
     <body>
-        <div>
-            header
-            <a href="/logout">logout</a>
+        <div style="display: flex">
+            <div style="flex: 1;">header</div>
+            <div>
+                {{ if .User }}
+                    {{ .User.Name }} | <a href="/logout">logout</a>
+                {{ end }}
+            </div>
         </div>
         <hr />
         <h1>profile layout</h1>
@@ -20,6 +24,7 @@
 
         <hr />
         <div>footer</div>
+        {{ . }}
     </body>
 </html>
 {{end}}

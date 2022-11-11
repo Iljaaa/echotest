@@ -105,7 +105,7 @@ func LoginPost(c echo.Context) error {
 	return c.Redirect(http.StatusFound, "/profile")
 }
 
-func validateData (c echo.Context, user UserData) (bool, *models.User, map[string]string) {
+func validateData (c echo.Context, user UserData) (bool, *users.User, map[string]string) {
 
 	errors := make(map[string]string)
 
@@ -134,7 +134,7 @@ func validateData (c echo.Context, user UserData) (bool, *models.User, map[strin
 	}
 
 	// user find
-	dbUser, err := models.FindByLogin(user.Login)
+	dbUser, err := users.FindByLogin(user.Login)
 	if err != nil || dbUser == nil {
 		errors["Login"] = "User not found"
 		return false, nil, errors
@@ -172,7 +172,7 @@ func LoginOut(c echo.Context) error {
 	fmt.Println("Profile logout")
 
 	// clear cookie
-	err := common.ClearAuthCookie(c)
+	err := common.ClearAuthData(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}

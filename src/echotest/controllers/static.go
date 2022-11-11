@@ -18,7 +18,7 @@ func HelloWorld() (int, string, error) {
 func Template(c echo.Context) error {
 	
 	fmt.Printf("Template\n")
-	u, _ := models.FindById(1)
+	u, _ := users.FindById(1)
 	if u != nil {
 		fmt.Printf("u %T %+v %v\n", u.Id, u.Id, u.Id)
 	}

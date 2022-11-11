@@ -4,6 +4,7 @@ import "fmt"
 import "net/http"
 import "strconv"
 import "time"
+import "errors"
 
 // echo 
 import "github.com/labstack/echo/v4"
@@ -22,34 +23,16 @@ const AuthCookieName = "4499_auth"
 func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
     return func(c echo.Context) error {
 
-        cookie, err := c.Cookie(AuthCookieName)
-
-	    fmt.Printf("error: %+v, %+v\n", err, cookie)
-
-	    if err != nil {
-    		return echo.NewHTTPError(http.StatusUnauthorized, err)
-    	}
-
-        // parse cookie string
-        if cookie.Value == "" {
-            return echo.NewHTTPError(http.StatusUnauthorized, "Empty cookie value")
-        }
-        
-        // convert user id to int
-        userId, convErr := strconv.Atoi(cookie.Value)
-        if convErr != nil || !(userId > 0)  {
-            return echo.NewHTTPError(http.StatusUnauthorized, "Error user id convert")
+        // get user 
+        u, err := getUserFromCoockie(c)
+        if err != nil || u == nil  {
+            return echo.NewHTTPError(http.StatusUnauthorized, err)
         }
 
-        u, findUserError := models.FindById(userId)
-        if findUserError != nil || u == nil  {
-            return echo.NewHTTPError(http.StatusUnauthorized, findUserError)
-        }
+        // renew coockie
 
         // todo: here check hash
         fmt.Println("is authed")
-
-
         
         // return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
         
@@ -83,13 +66,62 @@ func WriteAuthCookie(c echo.Context, userId int) error {
     return nil
 }
 
-// clear auth cookie
-func ClearAuthCookie(c echo.Context) error {
+// clear auth data
+func ClearAuthData(c echo.Context) error {
+    // clear cookie
     cookie := new(http.Cookie)
 	cookie.Name = AuthCookieName
-    // todo: generate valuse
 	cookie.Value = ""
 	cookie.Expires = time.Now() // 1.Add(24 * time.Hour)
 	c.SetCookie(cookie)
     return nil
+}
+
+type UserData struct {
+	Name string
+}
+
+// get auth user data
+func GetAuthUser (c echo.Context) (*UserData, error) {
+
+    u, err := getUserFromCoockie(c)
+    if err != nil || u == nil  {
+        return nil, err
+    }
+
+    userData := UserData{
+        Name : u.Name,
+    }
+
+    return &userData, nil
+}
+
+//
+// Get cookie, check cookie, find user, valid cooke hash
+//
+func getUserFromCoockie (c echo.Context) (*users.User, error) {
+    
+    // 
+    cookie, err := c.Cookie(AuthCookieName)
+    if err != nil {
+        return nil, err
+    }
+
+    // parse cookie string
+    if cookie.Value == "" {
+        return nil, errors.New("Empty cookie value")
+    }
+
+    // convert user id to int
+    userId, convErr := strconv.Atoi(cookie.Value)
+    if convErr != nil || !(userId > 0)  {
+        return nil,  errors.New("Error user id convert")
+    }
+
+    u, findUserError := users.FindById(userId)
+    if findUserError != nil || u == nil  {
+        return nil, findUserError
+    }
+
+    return u, nil
 }

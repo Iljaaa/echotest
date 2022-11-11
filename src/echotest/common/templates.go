@@ -6,7 +6,7 @@ import "fmt"
 import "errors"
 import "bytes"
 
-
+// echo
 import "github.com/labstack/echo/v4"
 
 type TemplateRenderer struct {
@@ -62,13 +62,11 @@ func GetTemplates() (map[string]*template.Template) {
     return templates;
 }
 
-type UserData struct {
-	Name string `aaaaAAA`
-}
 
-
-  
-func LazyRender(templateName string, templateFile string, layout string, data map[string]interface{}) (string, error) {
+//
+// Lazy rabder template
+//
+func LazyRender(c echo.Context, templateName string, templateFile string, layout string, data map[string]interface{}) (string, error) {
 	
 	// fmt.Print("Templates.LazyRender", templateName, templateFile, layout);
 
@@ -84,8 +82,8 @@ func LazyRender(templateName string, templateFile string, layout string, data ma
 	}
 
 	// add global data
-	data["User"] = UserData{Name: "asdasd"}
-	fmt.Printf("data: %+v\n", data)
+	userData, _ := GetAuthUser(c)
+	data["User"] = userData
 
 	// priint 
 	buf := &bytes.Buffer{}
