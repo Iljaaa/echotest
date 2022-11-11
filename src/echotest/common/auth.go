@@ -3,6 +3,7 @@ package common
 import "fmt"
 import "net/http"
 import "strconv"
+import "time"
 
 // echo 
 import "github.com/labstack/echo/v4"
@@ -78,6 +79,17 @@ func WriteAuthCookie(c echo.Context, userId int) error {
     // todo: generate valuse
 	cookie.Value = strconv.Itoa(userId)
 	// cookie.Expires = time.Now().Add(24 * time.Hour)
+	c.SetCookie(cookie)
+    return nil
+}
+
+// clear auth cookie
+func ClearAuthCookie(c echo.Context) error {
+    cookie := new(http.Cookie)
+	cookie.Name = AuthCookieName
+    // todo: generate valuse
+	cookie.Value = ""
+	cookie.Expires = time.Now() // 1.Add(24 * time.Hour)
 	c.SetCookie(cookie)
     return nil
 }

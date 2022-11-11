@@ -71,14 +71,14 @@ func Login(c echo.Context) error {
 //
 // login page with post data
 // 
-func LoginPost(c echo.Context) (int, error) {
+func LoginPost(c echo.Context) error {
 	// login := c.FormValue("login")
 	// password := c.FormValue("password")
 
 	var u UserData
 	err := c.Bind(&u)
 	if err != nil {
-		return http.StatusBadRequest, err
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	data := LoginPageData{
@@ -88,14 +88,21 @@ func LoginPost(c echo.Context) (int, error) {
 	isValid, dbUser, errors := validateData(c, u)
 	if !isValid {
 		data.Errors = errors
+		return c.Render(http.StatusOK, "login.html", data)
 	}
 
+
+	fmt.Printf("isValid %T %+v\n", isValid, isValid)
+	fmt.Printf("errors %T %+v\n", errors, errors)
+	fmt.Printf("dbUser %T %+v\n", dbUser, dbUser)
 	
 	// save auth
-	common.WriteAuthCookie(c, dbUser.Id)
+	err = common.WriteAuthCookie(c, dbUser.Id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
 	
-	c.Render(http.StatusOK, "login.html", data)
-    return http.StatusOK, nil
+	return c.Redirect(http.StatusFound, "/profile")
 }
 
 func validateData (c echo.Context, user UserData) (bool, *models.User, map[string]string) {
@@ -155,4 +162,20 @@ func validateData (c echo.Context, user UserData) (bool, *models.User, map[strin
 	// }
 
 	return true, dbUser, errors
+}
+
+
+//
+// login page with post data
+// 
+func LoginOut(c echo.Context) error {
+	fmt.Println("Profile logout")
+
+	// clear cookie
+	err := common.ClearAuthCookie(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+	
+	return c.Redirect(http.StatusFound, "/login")
 }

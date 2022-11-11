@@ -1,0 +1,26 @@
+
+{{define "profileLayout"}}
+<html>
+    <head>
+        <title>{{block "title" .}}{{end}}</title>
+    </head>
+    <body>
+        <div>
+            header
+            <a href="/logout">logout</a>
+        </div>
+        <hr />
+        <h1>profile layout</h1>
+
+        <div>
+            {{template "content" .}}
+        </div>
+
+        {{block "sidebar" .}}{{end}}
+
+        <hr />
+        <div>footer</div>
+    </body>
+</html>
+{{end}}
+

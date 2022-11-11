@@ -16,7 +16,7 @@ type ErrorData struct {
 //
 func CustomHTTPErrorHandler(err error, c echo.Context) {
 
-    fmt.Printf("errr2222: %v\n", err)
+    fmt.Printf("CustomHTTPErrorHandler: %v\n", err)
 
     data := ErrorData{
         Code: http.StatusInternalServerError,

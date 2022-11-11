@@ -63,7 +63,8 @@ func startEcho () {
 	})
 
 	e.GET("/profile", func(c echo.Context) error {
-        return controllers.Template(c)
+        con := controllers.ProfileController{}
+        return con.Profile(c)
 	}, common.AuthMiddleware)
 
 
@@ -72,9 +73,11 @@ func startEcho () {
 	})
 
 	e.POST("/login", func(c echo.Context) error {
-        status, error := controllers.LoginPost(c)
-        if error != nil {e.Logger.Fatal(error)}
-		return c.NoContent(status)
+		return controllers.LoginPost(c)
+	})
+
+    e.GET("/logout", func(c echo.Context) error {
+        return controllers.LoginOut(c)
 	})
 
     // test then controller return error
