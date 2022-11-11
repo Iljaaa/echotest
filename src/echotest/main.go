@@ -57,9 +57,14 @@ func startEcho () {
     // auth middle ware
     // e.Use(authMiddleware)
 
+    // react static fite
+    e.Static("/record", "../frontend/build")
+    // e.Static("/ss", "../frontend/build")
+
+    // e.File("/", "/build/index.html")
 
 	e.GET("/", func(c echo.Context) error {
-        return controllers.Template(c)
+         return controllers.IndexPage(c)
 	})
 
 	e.GET("/profile", func(c echo.Context) error {
@@ -91,6 +96,8 @@ func startEcho () {
         // if err != nil {e.Logger.Fatal(err)}
         return echo.NewHTTPError(status, err)
 	})
+
+
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

@@ -31,15 +31,18 @@ var templatesMap map[string]templateItem
 
 
 func init() {
+	// 
  	fmt.Println("Templates.init");
  	templatesCache = make(map[string]*template.Template)
 
 
 	templatesMap = make(map[string]templateItem)
 
+	// index page
+	templatesMap["index"] = templateItem{file: "view/static/index.html",}
+
 	// profile inde page
 	templatesMap["profile.index"] = templateItem{file: "view/profile/profile.html", layout: "view/layouts/profileLayout.html",}
-		
 }
 
 //
@@ -78,6 +81,7 @@ func GetTemplates() (map[string]*template.Template) {
 
 	// errors
     templates["error401.html"] = template.Must(template.ParseFiles("view/errors/error401.html", "view/layouts/layout.html"))
+    templates["error404.html"] = template.Must(template.ParseFiles("view/errors/error404.html", "view/layouts/layout.html"))
     templates["error.html"] = template.Must(template.ParseFiles("view/errors/error.html", "view/layouts/layout.html"))
     // templates["about.html"] = template.Must(template.ParseFiles("view/about.html", "view/base.html"))
 	
@@ -89,17 +93,26 @@ func GetTemplates() (map[string]*template.Template) {
 
 
 //
-// Lazy rabder template
+// Lazy rabder template profile template
+// extend data with user data
 //
 func LazyProfileRender(c echo.Context, templateName string, data map[string]interface{}) (string, error) {	
-	// fmt.Print("Templates.LazyRender", templateName, templateFile, layout);
-
-	// extend data by user data
+	// user data
 	userData, _ := GetAuthUser(c)
 	data["User"] = userData
 
+	return LazyRender(c, templateName, data)
+}
+
+
+
+//
+// Lazy rabder template
+//
+func LazyRender(c echo.Context, templateName string, data map[string]interface{}) (string, error) {	
 	return render(templateName, data)
 }
+
 
 //
 // render template with cache
@@ -116,7 +129,11 @@ func render (templateName string, data map[string]interface{}) (string, error) {
 			return "", errors.New("Template "+templateName+" noe exists")
 		}
 
-		tmpl := template.Must(template.ParseFiles(tmplData.file, tmplData.layout))
+		if tmplData.layout != "" {
+			tmpl = template.Must(template.ParseFiles(tmplData.file, tmplData.layout))
+		} else {
+			tmpl = template.Must(template.ParseFiles(tmplData.file))
+		}
 		// if err != nil {
 		// 	return "", err
 		// }
