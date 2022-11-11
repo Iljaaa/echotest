@@ -26,7 +26,9 @@ func (pc *ProfileController) Profile(c echo.Context) error {
 		"testParam" : "testValue",
 	}
 
-	content, err := common.LazyRender(c, "profile.index", "view/profile/profile.html", "view/layouts/profileLayout.html", data)
+	// fmt.Println("123")
+
+	content, err := common.LazyProfileRender(c, "profile.index", data)
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err)

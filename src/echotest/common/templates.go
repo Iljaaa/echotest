@@ -13,13 +13,38 @@ type TemplateRenderer struct {
 	Templates map[string]*template.Template
 }
 
+//
+// Prepare teplates cashe
+//
 var templatesCache map[string]*template.Template
 
-func init() {
- fmt.Println("Templates.init");
- templatesCache = make(map[string]*template.Template)
+type templateItem struct {
+	file string
+	layout string
 }
 
+//
+// Map of templates 
+// name -> template data
+//
+var templatesMap map[string]templateItem
+
+
+func init() {
+ 	fmt.Println("Templates.init");
+ 	templatesCache = make(map[string]*template.Template)
+
+
+	templatesMap = make(map[string]templateItem)
+
+	// profile inde page
+	templatesMap["profile.index"] = templateItem{file: "view/profile/profile.html", layout: "view/layouts/profileLayout.html",}
+		
+}
+
+//
+// echo template renderer
+//
 func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	tmpl, ok := t.Templates[name]
 	if !ok {
@@ -66,24 +91,38 @@ func GetTemplates() (map[string]*template.Template) {
 //
 // Lazy rabder template
 //
-func LazyRender(c echo.Context, templateName string, templateFile string, layout string, data map[string]interface{}) (string, error) {
-	
+func LazyProfileRender(c echo.Context, templateName string, data map[string]interface{}) (string, error) {	
 	// fmt.Print("Templates.LazyRender", templateName, templateFile, layout);
 
+	// extend data by user data
+	userData, _ := GetAuthUser(c)
+	data["User"] = userData
+
+	return render(templateName, data)
+}
+
+//
+// render template with cache
+//
+func render (templateName string, data map[string]interface{}) (string, error) {
+	// check template cache exists
 	tmpl, exists := templatesCache[templateName]
 
 	if !exists {
-		tmpl := template.Must(template.ParseFiles(templateFile, layout))
+
+		// template data
+		tmplData, exists := templatesMap[templateName]
+		if !exists {
+			return "", errors.New("Template "+templateName+" noe exists")
+		}
+
+		tmpl := template.Must(template.ParseFiles(tmplData.file, tmplData.layout))
 		// if err != nil {
 		// 	return "", err
 		// }
 
 		templatesCache[templateName] = tmpl
 	}
-
-	// add global data
-	userData, _ := GetAuthUser(c)
-	data["User"] = userData
 
 	// priint 
 	buf := &bytes.Buffer{}
@@ -93,7 +132,6 @@ func LazyRender(c echo.Context, templateName string, templateFile string, layout
 	if err != nil {
 		return "", err
 	}
-	// fmt.Printf("error2222: %+v\n", error)
 
 	return buf.String(), nil
 }

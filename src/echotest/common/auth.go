@@ -40,7 +40,7 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
         // fmt.Println("auth middle ware")
         // return next(c)
 
-        return  next(c)
+        return next(c)
     }
 }
 
