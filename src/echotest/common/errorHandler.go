@@ -32,17 +32,20 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
         
     }
 
-    // LOG ERROR
-    c.Logger().Error(err)
-
-    // fmt.Printf("data: %v\n", msg)
-    // data.Message = msg
-
-    // code 401 requree auth
-    if data.Code == 401 {
-        c.Render(data.Code, "error401.html", data)
-        return
+    // work with codes
+    switch data.Code {
+        case http.StatusNotFound: // 404
+            c.Logger().Info(fmt.Sprintf("%d not found; request: %s", http.StatusNotFound, c.Request().URL))
+            c.Render(data.Code, "error404.html", data)
+            return
+        case http.StatusUnauthorized: // 401
+        c.Logger().Info(fmt.Sprintf("%d not found; request: %s", http.StatusNotFound, c.Request().URL))
+            c.Render(data.Code, "error401.html", data)
+            return
+        default : 
+            c.Logger().Error(err)
+            c.Render(data.Code, "error.html", data)
     }
 
-    c.Render(data.Code, "error.html", data)
+   
 }
