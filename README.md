@@ -55,9 +55,10 @@ About claims
 - migration
 - models
 - React
-  - **Api**
+  - Api
+  - jwt
 - Validation
-  - ** scrf **
+  - **scrf**
 - Auth
   - Logout
   - **Safe cookie code**

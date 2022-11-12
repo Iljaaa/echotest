@@ -17,10 +17,11 @@ import "github.com/go-playground/validator"
 // import "context"
 // import "os"
 
+import "github.com/Iljaaa/echotest/src/config"
+
 import "github.com/Iljaaa/echotest/src/common"
 import "github.com/Iljaaa/echotest/src/common/db"
 import "github.com/Iljaaa/echotest/src/common/api"
-import "github.com/Iljaaa/echotest/src/config"
 import "github.com/Iljaaa/echotest/src/controllers"
 
 func main() {

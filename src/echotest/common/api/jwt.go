@@ -13,6 +13,16 @@ import "github.com/labstack/echo/v4"
 // jwt
 import "github.com/golang-jwt/jwt/v4"
 
+import "github.com/Iljaaa/echotest/src/config"
+
+var jwtSecretKey string
+
+func init (){
+	fmt.Println("Init jwt")
+	jwtSecretKey = config.GetConfig().JwtSecret
+	fmt.Printf("jwtSecretKey %s\n", jwtSecretKey)
+}
+
 //
 // jwt middleware check
 //
@@ -78,9 +88,9 @@ func CreateToken () (string, error) {
 		"nbf": time.Now().Unix(), // <- not defore https://pkg.go.dev/github.com/golang-jwt/jwt/v4#RegisteredClaims
 	})
 
-	mySigningKey := []byte("my_secret_key")
+	// mySigningKey := []byte("my_secret_key")
 
-	tokenString, err := token.SignedString(mySigningKey)
+	tokenString, err := token.SignedString([]byte(jwtSecretKey))
 	if err != nil {
 		return "", err
 	}
@@ -101,7 +111,8 @@ func checkToken (tokenString string) (bool, error) {
 			return nil, errors.New(fmt.Sprintf("Unexpected signing method: %v", token.Header["alg"])) //  fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte("my_secret_key"), nil
+		return []byte(jwtSecretKey), nil
+		// return []byte("my_secret_key"), nil
 	})
 
 	if err != nil {

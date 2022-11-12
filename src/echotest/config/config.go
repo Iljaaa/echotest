@@ -11,14 +11,22 @@ type dbConfig struct {
 	DB			string
 }
 
+// 
 type Configuration struct {
-    DB   dbConfig
+
+	// secret key for jwt middleware
+	JwtSecret string
+
+	// db confid
+    DB   dbConfig 
 }
 
 var conf Configuration;
 
 func init() {
-	conf = Configuration{}
+	conf = Configuration{
+		JwtSecret: "my_super_secret",
+	}
 	conf.DB = dbConfig{
 		HOST: "db",
 		PORT: 5432,
@@ -34,7 +42,6 @@ func init() {
 }
 
 func GetConfig() Configuration {
-
-	fmt.Printf("aaa: %+v\n", conf)
+	fmt.Printf("GetConfig.: %+v\n", conf)
     return conf
 }
