@@ -38,6 +38,15 @@ install to bin directory
 ### validation
 [https://github.com/go-playground/validator](https://github.com/go-playground/validator)
 
+### jvt 
+[https://github.com/golang-jwt/jwt](https://github.com/golang-jwt/jwt)    
+[https://echo.labstack.com/cookbook/jwt/](https://echo.labstack.com/cookbook/jwt/)    
+
+About claims   
+[https://pkg.go.dev/github.com/golang-jwt/jwt/v4#RegisteredClaims](https://pkg.go.dev/github.com/golang-jwt/jwt/v4#RegisteredClaims)
+
+```go get github.com/golang-jwt/jwt/v4``
+
 - Configs
 - html|template
   - layouts

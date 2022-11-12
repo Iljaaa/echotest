@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 // import "errors"
-// import "net/http"
+import "net/http"
 
 // echo https://echo.labstack.com/guide/
 
@@ -17,10 +17,11 @@ import "github.com/go-playground/validator"
 // import "context"
 // import "os"
 
-import "github.com/Iljaaa/echotest/src/common";
-import "github.com/Iljaaa/echotest/src/common/db"; 
-import "github.com/Iljaaa/echotest/src/config";
-import "github.com/Iljaaa/echotest/src/controllers";
+import "github.com/Iljaaa/echotest/src/common"
+import "github.com/Iljaaa/echotest/src/common/db"
+import "github.com/Iljaaa/echotest/src/common/api"
+import "github.com/Iljaaa/echotest/src/config"
+import "github.com/Iljaaa/echotest/src/controllers"
 
 func main() {
     fmt.Println("startng test script.....")
@@ -35,6 +36,7 @@ func main() {
     // starting server
     startEcho()
 }
+
 
 func startEcho () {
 
@@ -66,6 +68,23 @@ func startEcho () {
 	e.GET("/", func(c echo.Context) error {
          return controllers.IndexPage(c)
 	})
+
+    // api
+    e.POST("/api/test", func(c echo.Context) error {
+        return c.JSON(http.StatusOK, map[string]interface{}{
+            "resut": true,
+            "error": "",
+            "cooment": "its works",
+        })
+	}, jwt.JwtMiddleware)
+
+    e.GET("/test", func(c echo.Context) error {
+        return c.JSON(http.StatusOK, map[string]interface{}{
+            "resut": true,
+            "error": "",
+            "cooment": "its works",
+        })
+	}, jwt.JwtMiddleware)
 
 	e.GET("/profile", func(c echo.Context) error {
         con := controllers.ProfileController{}
